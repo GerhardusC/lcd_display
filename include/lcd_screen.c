@@ -119,15 +119,15 @@ void setup_screen() {
         }
     }
     //
-    // Reset sequence, doesn't look like its really needed, but can uncomment if something doesnt work.
+    // Reset sequence.
     //
-    // ESP_LOGI("RESET", "RESET SEQUENCE");
-    // send_cmd(SET_MODE_8_BIT);
-    // wait_us_blocking(10);
-    // send_cmd(SET_MODE_8_BIT);
-    // wait_us_blocking(200);
-    // send_cmd(SET_MODE_8_BIT);
-    // wait_us_blocking(80);
+    ESP_LOGI("RESET", "RESET SEQUENCE");
+    send_cmd(SET_MODE_8_BIT);
+    wait_us_blocking(10);
+    send_cmd(SET_MODE_8_BIT);
+    wait_us_blocking(200);
+    send_cmd(SET_MODE_8_BIT);
+    wait_us_blocking(80);
 
     ESP_LOGI("8_BIT_MODE", "Setting 8 bit mode.");
     send_cmd(SET_MODE_8_BIT);
@@ -135,13 +135,13 @@ void setup_screen() {
 
     // These just happen by default, but can be explicit if needed.
     //
-    // ESP_LOGI("CLEAR", "Clearing display");
-    // send_cmd(CLEAR);
-    // wait_for_busy_flag();
-    //
-    // ESP_LOGI("CURSOR_INCREMENT_MODE", "Changing mode of cursor to increment after each write.");
-    // send_cmd(CURSOR_INCREMENT_MODE);
-    // wait_for_busy_flag();
+    ESP_LOGI("CLEAR", "Clearing display");
+    send_cmd(CLEAR);
+    wait_for_busy_flag();
+
+    ESP_LOGI("CURSOR_INCREMENT_MODE", "Changing mode of cursor to increment after each write.");
+    send_cmd(CURSOR_INCREMENT_MODE);
+    wait_for_busy_flag();
     //
     ESP_LOGI("DISPLAY ON", "Display on, cursor off, postion off");
     send_cmd(DISPLAY_ON);
