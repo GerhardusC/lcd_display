@@ -2,11 +2,11 @@
 #include <stdint.h>
 
 // 0 command mode, 1 data mode
-#define REGISTER_SELECT 25
+#define REGISTER_SELECT         25
 // 0 write, 1 read
-#define READ_WRITE 26
-#define ENABLE_RW 27
-#define BUSY_FLAG 35
+#define READ_WRITE              26
+#define ENABLE_RW               27
+#define BUSY_FLAG               35
 
 // Commands:
 #define SET_MODE_8_BIT          0b00111000
@@ -16,6 +16,8 @@
 #define CURSOR_INCREMENT_MODE   0b00000110
 #define CURSOR_BOTTOM_LINE      0b11000000
 #define CURSOR_TOP_LINE         0b01000000
+
+#define STD_MAX_EXECUTION_TIME  37
 
 void wait_us_blocking(uint32_t micros_to_wait) {
     uint64_t micros_now_plus_delay = esp_timer_get_time() + micros_to_wait;
@@ -70,14 +72,14 @@ void write_data(uint8_t data){
     gpio_set_level(ENABLE_RW, 1);
     wait_us_blocking(1);
     gpio_set_level(ENABLE_RW, 0);
-    vTaskDelay(1);
+    wait_us_blocking(STD_MAX_EXECUTION_TIME);
 }
 
 void write_string(char *string) {
     bool string_done = false;
 
     send_cmd(CLEAR);
-    vTaskDelay(2);
+    vTaskDelay(1);
 
     for(uint8_t i = 0; i < 16; i++){
         if(string[i] == '\0'){
@@ -87,7 +89,7 @@ void write_string(char *string) {
     }
 
     send_cmd(CURSOR_BOTTOM_LINE);
-    vTaskDelay(1);
+    wait_us_blocking(STD_MAX_EXECUTION_TIME);
 
     for(uint8_t i = 16; i < 32; i++){
         if(string[i] == '\0'){
@@ -116,28 +118,32 @@ void setup_screen() {
             gpio_set_level(pins[i], 0);
         }
     }
-    // Reset sequence
-    ESP_LOGI("RESET", "RESET SEQUENCE");
-    send_cmd(SET_MODE_8_BIT);
-    wait_us_blocking(10);
-    send_cmd(SET_MODE_8_BIT);
-    wait_us_blocking(200);
-    send_cmd(SET_MODE_8_BIT);
-    wait_us_blocking(80);
+    //
+    // Reset sequence, doesn't look like its really needed, but can uncomment if something doesnt work.
+    //
+    // ESP_LOGI("RESET", "RESET SEQUENCE");
+    // send_cmd(SET_MODE_8_BIT);
+    // wait_us_blocking(10);
+    // send_cmd(SET_MODE_8_BIT);
+    // wait_us_blocking(200);
+    // send_cmd(SET_MODE_8_BIT);
+    // wait_us_blocking(80);
 
     ESP_LOGI("8_BIT_MODE", "Setting 8 bit mode.");
     send_cmd(SET_MODE_8_BIT);
     wait_for_busy_flag();
 
-    ESP_LOGI("CLEAR", "Clearing display");
-    send_cmd(CLEAR);
-    wait_for_busy_flag();
-
-    ESP_LOGI("CURSOR_INCREMENT_MODE", "Changing mode of cursor to increment after each write.");
-    send_cmd(CURSOR_INCREMENT_MODE);
-    wait_for_busy_flag();
-
-    ESP_LOGI("DISPLAY ON", "Display on, cursor on, postion on");
+    // These just happen by default, but can be explicit if needed.
+    //
+    // ESP_LOGI("CLEAR", "Clearing display");
+    // send_cmd(CLEAR);
+    // wait_for_busy_flag();
+    //
+    // ESP_LOGI("CURSOR_INCREMENT_MODE", "Changing mode of cursor to increment after each write.");
+    // send_cmd(CURSOR_INCREMENT_MODE);
+    // wait_for_busy_flag();
+    //
+    ESP_LOGI("DISPLAY ON", "Display on, cursor off, postion off");
     send_cmd(DISPLAY_ON);
     wait_for_busy_flag();
 }

@@ -32,7 +32,7 @@ void app_main(void) {
 
     while(1){
         write_string(lines[i%4]);
-        vTaskDelay(100);
+        vTaskDelay(1000);
         i++;
         if(i > 100){
             i = 0;
