@@ -9,21 +9,30 @@
 #include "lcd_screen.h"
 #include "shift_register.h"
 
+
 void app_main(void) {
     setup_shift_register();
     vTaskDelay(20);
     setup_screen();
 
+    char* lines[32] = {
+        //              ||
+        "Once upon a time ",
+        //              ||
+        "In a galaxy far,far away...",
+        //              ||
+        "Someone...      for some reason",
+        //              ||
+        "wrote code for  the LCD-16x2",
+        //              ||
+    };
+
 
     int i = 0;
 
     while(1){
-        vTaskDelay(20);
-        if(i % 15 == 0){
-            send_cmd(0b00000001);
-        } else {
-            write_data(0b11111111);
-        }
+        write_string(lines[i%4]);
+        vTaskDelay(100);
         i++;
         if(i > 100){
             i = 0;

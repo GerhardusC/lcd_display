@@ -6,3 +6,4 @@
 void send_cmd(int cmd);
 void write_data(uint8_t data);
 void setup_screen();
+void write_string(char *string);
