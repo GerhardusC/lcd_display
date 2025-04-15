@@ -79,8 +79,9 @@ void write_string(char *string) {
     bool string_done = false;
 
     send_cmd(CLEAR);
-    vTaskDelay(1);
+    vTaskDelay(2);
 
+    // Write top row full of chars.
     for(uint8_t i = 0; i < 16; i++){
         if(string[i] == '\0'){
             string_done = true;
@@ -91,6 +92,7 @@ void write_string(char *string) {
     send_cmd(CURSOR_BOTTOM_LINE);
     wait_us_blocking(STD_MAX_EXECUTION_TIME);
 
+    // Write bottom row full of chars.
     for(uint8_t i = 16; i < 32; i++){
         if(string[i] == '\0'){
             string_done = true;
