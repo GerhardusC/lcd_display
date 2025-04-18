@@ -1,4 +1,5 @@
 #include "lcd_screen.h"
+#include "freertos/idf_additions.h"
 #include <stdint.h>
 
 // 0 command mode, 1 data mode
@@ -11,11 +12,14 @@
 // Commands:
 #define SET_MODE_8_BIT          0b00111000
 #define CLEAR                   0b00000001
-#define DISPLAY_ON              0b00001100
+#define DISPLAY_ON              0b00001111
 #define DISPLAY_ON_WITH_CURSOR  0b00001111
 #define CURSOR_INCREMENT_MODE   0b00000110
 #define CURSOR_BOTTOM_LINE      0b11000000
 #define CURSOR_TOP_LINE         0b01000000
+#define RETURN_HOME             0b00000010
+#define SHIFT_CURSOR_RIGHT      0b00010100
+#define SHIFT_CURSOR_LEFT       0b00010000
 
 #define STD_MAX_EXECUTION_TIME  37
 
@@ -104,6 +108,25 @@ void write_string(char *string) {
     vTaskDelay(1);
 }
 
+
+void write_one_line(enum Line16x2 line, char *string, uint8_t len) {
+    uint8_t length = len - 1;
+    send_cmd(RETURN_HOME);
+    vTaskDelay(1);
+
+    if(line == BOTTOM){
+        for(uint8_t i = 0; i < 40; i++){
+            send_cmd(SHIFT_CURSOR_RIGHT);
+            wait_us_blocking(37);
+        }
+    }
+
+    for(uint8_t i = 0; i < 16; i++){
+        i > length ? write_data((uint8_t) ' ') : write_data((uint8_t) string[i]);
+    }
+    vTaskDelay(1);
+}
+
 void setup_screen() {
     int pins[] = {
         REGISTER_SELECT,
@@ -139,13 +162,13 @@ void setup_screen() {
     //
     ESP_LOGI("CLEAR", "Clearing display");
     send_cmd(CLEAR);
-    wait_for_busy_flag();
+    vTaskDelay(1);
 
     ESP_LOGI("CURSOR_INCREMENT_MODE", "Changing mode of cursor to increment after each write.");
     send_cmd(CURSOR_INCREMENT_MODE);
-    wait_for_busy_flag();
+    wait_us_blocking(37);
     //
     ESP_LOGI("DISPLAY ON", "Display on, cursor off, postion off");
     send_cmd(DISPLAY_ON);
-    wait_for_busy_flag();
+    wait_us_blocking(37);
 }
