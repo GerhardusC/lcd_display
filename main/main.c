@@ -1,11 +1,7 @@
-#include <stdint.h>
-#include <stdio.h>
 #include "esp_event_base.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "mqtt_client.h"
-// #include "sdkconfig.h"
-// #include "esp_system.h"
 
 #include "secret.h"
 #include "lcd_screen.h"
