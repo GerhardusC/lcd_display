@@ -12,7 +12,7 @@
 // Commands:
 #define SET_MODE_8_BIT          0b00111000
 #define CLEAR                   0b00000001
-#define DISPLAY_ON              0b00001111
+#define DISPLAY_ON              0b00001100
 #define DISPLAY_ON_WITH_CURSOR  0b00001111
 #define CURSOR_INCREMENT_MODE   0b00000110
 #define CURSOR_BOTTOM_LINE      0b11000000
